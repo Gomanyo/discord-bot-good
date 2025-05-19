@@ -3,8 +3,8 @@ import sys
 import discord
 from discord.ext import commands
 from discord import app_commands
-from collections import defaultdict 
-import datetime
+from collections import defaultdict
+from datetime import datetime, timedelta  # ✅ 둘 다 가져오기
 import requests
 
 # 봇 정의
@@ -14,7 +14,7 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree  # 슬래시 명령어용 트리 정의
 
 # 현재 시간 (UTC+9 = 한국시간)
-now = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
+now = datetime.utcnow() + timedelta(hours=9)  # ✅ 올바른 방식
 hour = now.hour
 
 # 오전 11시 ~ 다음날 오전 3시까지만 실행 허용
