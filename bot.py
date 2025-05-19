@@ -19,6 +19,7 @@ async def check_shutdown_time():
     while True:
         now = datetime.utcnow() + timedelta(hours=9)
         hour = now.hour
+        print(f"[DEBUG] 현재 시각 (KST): {now.strftime('%Y-%m-%d %H:%M:%S')}")
         if not (11 <= hour < 24 or 0 <= hour < 3):
             print(f"[AUTO-SHUTDOWN] {hour}시는 허용된 실행 시간이 아닙니다. 종료합니다.")
             await bot.close()
