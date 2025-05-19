@@ -2,6 +2,8 @@ import os
 import sys
 import discord
 from discord.ext import commands
+from discord import app_commands
+from collections import defaultdict 
 import datetime
 import requests
 
