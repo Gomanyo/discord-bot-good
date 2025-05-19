@@ -1,6 +1,14 @@
-import requests
-import datetime
+import os
 import sys
+import discord
+from discord.ext import commands
+import datetime
+import requests
+
+# 봇 정의 (필수!)
+intents = discord.Intents.default()
+intents.message_content = True
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 # 현재 시간 (UTC+9 = 한국시간)
 now = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
@@ -10,9 +18,7 @@ hour = now.hour
 if not (11 <= hour < 24 or 0 <= hour < 3):
     print(f"[INFO] 현재 시간 {hour}시는 실행 허용 시간이 아닙니다. 종료합니다.")
     sys.exit()
-
-import os
-
+    
 
 RIOT_API_KEY = os.getenv("RIOT_API_KEY")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
