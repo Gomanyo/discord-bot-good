@@ -1,6 +1,6 @@
 import os
 import sys
-import asyncio  # ✅ 추가
+import asyncio
 import discord
 from discord.ext import commands
 from discord import app_commands
@@ -8,28 +8,29 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import requests
 
-# 봇 정의
+def log(msg):
+    print(msg)
+    sys.stdout.flush()
+
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
-tree = bot.tree  # 슬래시 명령어용 트리 정의
+tree = bot.tree
 
-# ✅ 자동 종료 함수 정의
 async def check_shutdown_time():
     while True:
         now = datetime.utcnow() + timedelta(hours=9)
         hour = now.hour
-        print(f"[DEBUG] 현재 시간: {hour}시 - 체크 실행 중")  # ✅ 로그 확인용
+        log(f"[DEBUG] 현재 시간: {hour}시 - 체크 실행 중")  # ✅ flush 포함 로그
         if not (11 <= hour < 24 or 0 <= hour < 3):
-            print(f"[AUTO-SHUTDOWN] {hour}시는 허용된 실행 시간이 아닙니다. 종료합니다.")
+            log(f"[AUTO-SHUTDOWN] {hour}시는 허용된 실행 시간이 아닙니다. 종료합니다.")
             await bot.close()
             break
-        await asyncio.sleep(180)  # 매 3분마다 체크
+        await asyncio.sleep(180)
 
-# ✅ 봇이 로그인되면 자동 종료 태스크 시작
 @bot.event
 async def on_ready():
-    print(f"✅ 봇 로그인 성공: {bot.user}")
+    log(f"✅ 봇 로그인 성공: {bot.user}")
     bot.loop.create_task(check_shutdown_time())
     
 RIOT_API_KEY = os.getenv("RIOT_API_KEY")
