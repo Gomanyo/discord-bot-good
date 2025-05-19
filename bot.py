@@ -1,3 +1,15 @@
+import datetime
+import sys
+
+# 현재 시간 (UTC+9 = 한국시간)
+now = datetime.datetime.utcnow() + datetime.timedelta(hours=9)
+hour = now.hour
+
+# 오전 11시 ~ 다음날 새벽 03시까지만 실행 허용
+if not (11 <= hour < 24 or 0 <= hour < 3):
+    print(f"[INFO] 현재 시간 {hour}시는 실행 허용 시간이 아닙니다. 종료합니다.")
+    sys.exit()
+
 import os
 
 
