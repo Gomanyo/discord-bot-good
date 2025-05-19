@@ -1,10 +1,11 @@
 import os
 import sys
+import asyncio  # ✅ 추가
 import discord
 from discord.ext import commands
 from discord import app_commands
 from collections import defaultdict
-from datetime import datetime, timedelta  # ✅ 둘 다 가져오기
+from datetime import datetime, timedelta
 import requests
 
 # 봇 정의
@@ -13,16 +14,23 @@ intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree  # 슬래시 명령어용 트리 정의
 
-# 현재 시간 (UTC+9 = 한국시간)
-now = datetime.utcnow() + timedelta(hours=9)  # ✅ 올바른 방식
-hour = now.hour
+# ✅ 자동 종료 함수 정의
+async def check_shutdown_time():
+    while True:
+        now = datetime.utcnow() + timedelta(hours=9)
+        hour = now.hour
+        if not (11 <= hour < 24 or 0 <= hour < 3):
+            print(f"[AUTO-SHUTDOWN] {hour}시는 허용된 실행 시간이 아닙니다. 종료합니다.")
+            await bot.close()
+            break
+        await asyncio.sleep(180)  # 매 3분마다 체크
 
-# 오전 11시 ~ 다음날 오전 3시까지만 실행 허용
-if not (11 <= hour < 24 or 0 <= hour < 3):
-    print(f"[INFO] 현재 시간 {hour}시는 실행 허용 시간이 아닙니다. 종료합니다.")
-    sys.exit()
+# ✅ 봇이 로그인되면 자동 종료 태스크 시작
+@bot.event
+async def on_ready():
+    print(f"✅ 봇 로그인 성공: {bot.user}")
+    bot.loop.create_task(check_shutdown_time())
     
-
 RIOT_API_KEY = os.getenv("RIOT_API_KEY")
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 PUBG_API_KEY = os.getenv("PUBG_API_KEY")
