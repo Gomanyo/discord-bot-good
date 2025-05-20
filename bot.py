@@ -18,18 +18,20 @@ bot = commands.Bot(command_prefix="!", intents=intents)
 tree = bot.tree
 
 async def check_shutdown_time():
+    await bot.wait_until_ready()
     while True:
         now = datetime.utcnow() + timedelta(hours=9)
         hour = now.hour
-        log(f"[DEBUG] 현재 시간: {hour}시 - 체크 실행 중")  # ✅ flush 포함 로그
-        if not (11 <= hour < 24 or 0 <= hour < 3):
-            log(f"[AUTO-SHUTDOWN] {hour}시는 허용된 실행 시간이 아닙니다. 종료합니다.")
-            await bot.close()
-            break
-        await asyncio.sleep(180)
+        if 11 <= hour or hour < 3:
+            log(f"[ACTIVE] 현재 {hour}시 - 봇 실행 유지")
+        else:
+            log(f"[INACTIVE] 현재 {hour}시 - 비활성 시간, 대기 중")
+            # 원하는 경우 command 수신 제한도 여기에 추가 가능
+        await asyncio.sleep(180)  # 3분마다 상태 확인
 
 @bot.event
 async def on_ready():
+    await tree.sync()
     log(f"✅ 봇 로그인 성공: {bot.user}")
     bot.loop.create_task(check_shutdown_time())
     
@@ -66,11 +68,6 @@ champion_name_map = get_champion_name_map()
 
 def compare(val, avg):
     return "↑" if val > avg else "↓"
-
-@bot.event
-async def on_ready():
-    await tree.sync()
-    print(f"✅ 번 로그인 성공: {bot.user}")
 
 # 롤 전적 명령어
 @tree.command(name="전적", description="롤 소환사의 최근 전적을 확인합니다 (예: Hide on bush#KR1)")
